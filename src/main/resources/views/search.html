@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" th:replace="~{layouts/main :: layout(~{::title}, ~{::section})}" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Micronaut Elasticsearch Demo</title>
+</head>
+<body>
+<section>
+    <h1>Micronaut Elasticsearch Demo</h1>
+    <div class="pb-3">
+        <a class="link-primary" href="/favorite/edit">Create A New Entry</a>
+    </div>
+    <form action="/search" method="post" id="search" name="search" class="needs-validation" novalidate>
+        <div class="row g-3">
+            <div class="col-sm-10">
+                <input th:value="${searchCommand != null} ? ${#objects.nullSafe(searchCommand.searchString, '')} : ''" type="text" class="form-control" name="searchString" id="searchString" placeholder="Search term..." value="" required />
+                <div class="invalid-feedback">
+                    Please enter a search string!
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <button class="btn btn-primary" type="submit">Search</button>
+            </div>
+        </div>
+    </form>
+
+    <div th:if="${searchResponse != null}" class="pt-3">
+        <h2>Showing <span th:text="${searchResponse.getHits().getTotalHits().value} < ${searchCommand.max} ? ${searchResponse.getHits().totalHits.value} : ${searchCommand.max}"></span> of
+            <span th:text="${searchResponse.getHits().getTotalHits().value}"></span> Hits (Took <span th:text="${searchResponse.getTook().getMillis()}"></span>ms)</h2>
+        <div th:each="response, status: ${searchResponse.getHits()}">
+            <div class="row">
+                <div class="col-sm-12">
+                    <p>Result: <span th:text="${status.index}"></span> (ID: <span th:text="${response.getSourceAsMap().id}"></span>) |
+                        <a th:href="@{'/delete/' + ${response.getSourceAsMap().id}}">delete</a></p>
+                    <ul>
+                        <li>Favorite Artist: <span th:text="${response.getSourceAsMap().favoriteArtist}"></span></li>
+                        <li>Favorite Beer: <span th:text="${response.getSourceAsMap().favoriteBeer}"></span></li>
+                        <li>Favorite Book: <span th:text="${response.getSourceAsMap().favoriteBook}"></span></li>
+                        <li>Favorite Cat: <span th:text="${response.getSourceAsMap().favoriteCat}"></span></li>
+                        <li>Favorite Superhero: <span th:text="${response.getSourceAsMap().favoriteSuperhero}"></span></li>
+                        <li>Favorite Color: <span th:text="${response.getSourceAsMap().favoriteColor}"></span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>

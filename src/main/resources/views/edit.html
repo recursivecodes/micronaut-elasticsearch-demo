@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en" th:replace="~{layouts/main :: layout(~{::title}, ~{::section})}" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Create Favorite</title>
+</head>
+<body>
+<section>
+    <h1>Create Favorite</h1>
+    <div th:if="${saved != null}" class="alert alert-info">
+        Your favorites have been saved.
+    </div>
+    <div class="pb-3">
+        <a class="link-primary" href="/search">Search Favorites</a>
+    </div>
+    <form action="/favorite/edit" method="post" id="search" name="search" class="needs-validation" novalidate>
+        <div class="row g-3 mb-3">
+            <div class="col-sm-6">
+                <label for="favoriteArtist" class="form-label">Favorite Artist</label>
+                <input type="text" class="form-control" name="favoriteArtist" id="favoriteArtist" value="" required />
+                <div class="invalid-feedback">
+                    Please enter favorite artist!
+                </div>
+            </div>
+        </div>
+        <div class="row g-3 mb-3">
+            <div class="col-sm-6">
+                <label for="favoriteBeer" class="form-label">Favorite Beer</label>
+                <input type="text" class="form-control" name="favoriteBeer" id="favoriteBeer" value="" required />
+                <div class="invalid-feedback">
+                    Please enter favorite beer!
+                </div>
+            </div>
+        </div>
+        <div class="row g-3 mb-3">
+            <div class="col-sm-6">
+                <label for="favoriteBook" class="form-label">Favorite Book</label>
+                <input type="text" class="form-control" name="favoriteBook" id="favoriteBook" value="" required />
+                <div class="invalid-feedback">
+                    Please enter favorite book!
+                </div>
+            </div>
+        </div>
+        <div class="row g-3 mb-3">
+            <div class="col-sm-6">
+                <label for="favoriteColor" class="form-label">Favorite Color</label>
+                <input type="text" class="form-control" name="favoriteColor" id="favoriteColor" value="" required />
+                <div class="invalid-feedback">
+                    Please enter favorite color!
+                </div>
+            </div>
+        </div>
+        <div class="row g-3 mb-3">
+            <div class="col-sm-6">
+                <label for="favoriteCat" class="form-label">Favorite Cat</label>
+                <input type="text" class="form-control" name="favoriteCat" id="favoriteCat" value="" required />
+                <div class="invalid-feedback">
+                    Please enter favorite cat!
+                </div>
+            </div>
+        </div>
+        <div class="row g-3 mb-3">
+            <div class="col-sm-6">
+                <label for="favoriteSuperhero" class="form-label">Favorite Superhero</label>
+                <input type="text" class="form-control" name="favoriteSuperhero" id="favoriteSuperhero" value="" required />
+                <div class="invalid-feedback">
+                    Please enter favorite superhero!
+                </div>
+            </div>
+        </div>
+        <div class="row g-3 pt-3">
+            <div class="col-sm-2">
+                <button class="btn btn-primary" type="submit">Create</button>
+            </div>
+        </div>
+    </form>
+    <script>
+      (function () {
+        'use strict'
+
+        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+        var forms = document.querySelectorAll('.needs-validation')
+
+        // Loop over them and prevent submission
+        Array.prototype.slice.call(forms)
+          .forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+              if (!form.checkValidity()) {
+                event.preventDefault()
+                event.stopPropagation()
+              }
+
+              form.classList.add('was-validated')
+            }, false)
+          })
+      })()
+    </script>
+</section>
+</body>
+</html>

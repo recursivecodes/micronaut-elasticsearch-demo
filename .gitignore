@@ -1,0 +1,7 @@
+bastion-session.sh
+connect-session.sh
+.envrc
+.idea/
+.gradle/
+build/
+build-resource/
