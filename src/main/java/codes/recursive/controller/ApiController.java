@@ -6,16 +6,12 @@ import codes.recursive.repository.FavoriteRepository;
 import codes.recursive.service.SearchService;
 import io.micronaut.context.annotation.Property;
 import io.micronaut.core.util.CollectionUtils;
-import io.micronaut.http.HttpRequest;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
-import io.micronaut.http.annotation.Error;
 import io.micronaut.http.annotation.*;
-import io.micronaut.views.ModelAndView;
 import org.elasticsearch.action.search.SearchResponse;
 
 import java.io.IOException;
-import java.net.URI;
 import java.util.Optional;
 
 @Controller("/api")

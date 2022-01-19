@@ -15,7 +15,7 @@
         <div class="row g-3">
             <div class="col-sm-12">
                 <div class="input-group has-validation">
-                    <label for="searchString" class="sr-only">Search String</label>
+                    <label for="searchString" class="visually-hidden">Search String</label>
                     <input th:value="${searchCommand != null} ? ${#objects.nullSafe(searchCommand.searchString, '')} : ''" type="search" class="form-control" name="searchString" id="searchString" placeholder="Search term..." value="" required />
                     <button class="btn btn-primary" type="submit">Search</button>
                     <div class="invalid-feedback">
