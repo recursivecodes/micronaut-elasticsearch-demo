@@ -3,6 +3,7 @@ package codes.recursive.controller;
 import codes.recursive.command.SearchCommand;
 import codes.recursive.domain.Favorite;
 import codes.recursive.repository.FavoriteRepository;
+import codes.recursive.service.SearchService;
 import io.micronaut.context.annotation.Property;
 import io.micronaut.core.util.CollectionUtils;
 import io.micronaut.http.HttpRequest;
@@ -11,49 +12,43 @@ import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Error;
 import io.micronaut.http.annotation.*;
 import io.micronaut.views.ModelAndView;
-import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.index.query.Operator;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.QueryStringQueryBuilder;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
 
 import java.io.IOException;
 import java.net.URI;
 import java.util.Optional;
 
-@Controller("/")
+@Controller()
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class HomeController {
 
     private final FavoriteRepository favoriteRepository;
-    private final RestHighLevelClient searchClient;
+    private final SearchService searchService;
     private final String indexName;
 
     public HomeController(
             FavoriteRepository favoriteRepository,
-            RestHighLevelClient searchClient,
+            SearchService searchService,
             @Property(name = "codes.recursive.elasticsearch.index.name") String indexName
     ) {
         this.favoriteRepository = favoriteRepository;
-        this.searchClient = searchClient;
+        this.searchService = searchService;
         this.indexName = indexName;
     }
 
-    @Get(uri="/", produces="text/plain")
+    @Get()
     public HttpResponse index() {
         return HttpResponse.redirect(URI.create("/search"));
     }
 
-    @Post(uri = "/", produces = MediaType.APPLICATION_JSON)
+    @Post(uri = "/favorite", produces = MediaType.APPLICATION_JSON)
     public HttpResponse saveFavorite(@Body Favorite favorite) {
         return HttpResponse.created(
                 favoriteRepository.save(favorite)
         );
     }
 
-    @Put(uri = "/", produces = MediaType.APPLICATION_JSON)
+    @Put(uri = "/favorite", produces = MediaType.APPLICATION_JSON)
     public HttpResponse updateFavorite(@Body Favorite favorite) {
         return HttpResponse.ok(
                 favoriteRepository.update(favorite)
@@ -76,32 +71,18 @@ public class HomeController {
     @Get(uri="/delete/{id}")
     public HttpResponse<String> deleteFavorite(Long id) {
         Optional<Favorite> favorite = favoriteRepository.findById(id);
-        if (favorite.isPresent()) {
-            favoriteRepository.delete(favorite.get());
-        }
+        favorite.ifPresent(favoriteRepository::delete);
         return HttpResponse.redirect(URI.create("/search"));
     }
 
     @Get(uri = "/search")
-    public ModelAndView searchGet() throws IOException {
+    public ModelAndView searchGet() {
         return new ModelAndView("search", CollectionUtils.mapOf());
     }
 
     @Post(uri = "/search", consumes = MediaType.APPLICATION_FORM_URLENCODED)
     public ModelAndView searchPost(@Body SearchCommand searchCommand) throws IOException {
-        SearchResponse searchResponse = null;
-        if (searchCommand.getSearchString().length() > 0 ) {
-            SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-            QueryStringQueryBuilder queryStringQueryBuilder = QueryBuilders.queryStringQuery(searchCommand.getSearchString());
-            queryStringQueryBuilder.defaultOperator(Operator.OR);
-            searchSourceBuilder.query(queryStringQueryBuilder);
-            searchSourceBuilder.from(searchCommand.getOffset());
-            searchSourceBuilder.size(searchCommand.getMax() > 25 ? 25 : searchCommand.getMax());
-            SearchRequest searchRequest = new SearchRequest();
-            searchRequest.indices(indexName);
-            searchRequest.source(searchSourceBuilder);
-            searchResponse = searchClient.search(searchRequest, RequestOptions.DEFAULT);
-        }
+        SearchResponse searchResponse = searchService.search(searchCommand, indexName);
         return new ModelAndView("search", CollectionUtils.mapOf("searchCommand", searchCommand, "searchResponse", searchResponse));
     }
 

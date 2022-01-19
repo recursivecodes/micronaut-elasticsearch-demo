@@ -1,21 +1,15 @@
 package codes.recursive.listener;
 
 import codes.recursive.domain.Favorite;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import codes.recursive.service.SearchService;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Property;
 import io.micronaut.data.event.listeners.*;
 import jakarta.inject.Singleton;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.DocWriteResponse;
-import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
-import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.xcontent.XContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,15 +17,15 @@ import org.slf4j.LoggerFactory;
 @Factory
 public class FavoriteListeners {
     private static final Logger LOG = LoggerFactory.getLogger(FavoriteListeners.class);
-    private final RestHighLevelClient searchClient;
+    private final SearchService searchService;
     private final String indexName;
-    private ActionListener<IndexResponse> indexListener;
+    private final ActionListener<IndexResponse> indexListener;
 
     public FavoriteListeners(
-            RestHighLevelClient searchClient,
+            SearchService searchService,
             @Property(name = "codes.recursive.elasticsearch.index.name") String indexName
     ) {
-        this.searchClient = searchClient;
+        this.searchService = searchService;
         this.indexName = indexName;
 
         this.indexListener = new ActionListener<>() {
@@ -61,17 +55,7 @@ public class FavoriteListeners {
     PostPersistEventListener<Favorite> afterFavoritePersist() {
         return (favorite) -> {
             LOG.info("Indexing favorite: {}", favorite.getId() );
-            ObjectMapper mapper = new ObjectMapper();
-            IndexRequest indexRequest = new IndexRequest(indexName);
-            try {
-                indexRequest.id(favorite.getId().toString()).source(
-                        mapper.writeValueAsString(favorite),
-                        XContentType.JSON
-                );
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }
-            searchClient.indexAsync(indexRequest, RequestOptions.DEFAULT, indexListener);
+            searchService.indexFavorite(favorite, indexName, indexListener);
         };
     }
 
@@ -84,17 +68,7 @@ public class FavoriteListeners {
     PostUpdateEventListener<Favorite> afterFavoriteUpdate() {
         return (favorite) -> {
             LOG.info("Indexing favorite: {}", favorite.getId() );
-            ObjectMapper mapper = new ObjectMapper();
-            IndexRequest indexRequest = new IndexRequest(indexName);
-            try {
-                indexRequest.id(favorite.getId().toString()).source(
-                        mapper.writeValueAsString(favorite),
-                        XContentType.JSON
-                );
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }
-            searchClient.indexAsync(indexRequest, RequestOptions.DEFAULT, indexListener);
+            searchService.indexFavorite(favorite, indexName, indexListener);
         };
     }
 
@@ -107,8 +81,7 @@ public class FavoriteListeners {
     PostRemoveEventListener<Favorite> afterFavoriteRemove() {
         return (favorite) -> {
             LOG.info("Deleting indexed favorite: {}", favorite );
-            DeleteRequest deleteIndexRequest = new DeleteRequest(indexName, favorite.getId().toString());
-            searchClient.deleteAsync(deleteIndexRequest, RequestOptions.DEFAULT, new ActionListener<DeleteResponse>() {
+            ActionListener<DeleteResponse> actionListener = new ActionListener<>() {
                 @Override
                 public void onResponse(DeleteResponse deleteResponse) {
                     LOG.info("Index deleted: {}", favorite.getId());
@@ -117,7 +90,8 @@ public class FavoriteListeners {
                 public void onFailure(Exception e) {
                     e.printStackTrace();
                 }
-            });
+            };
+            searchService.deleteFavorite(favorite, indexName, actionListener);
         };
     }
 }
