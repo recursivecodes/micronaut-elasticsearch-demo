@@ -63,7 +63,7 @@ public class PageController {
 
     @Get(uri = "/search")
     public ModelAndView searchGet() {
-        return new ModelAndView("search", CollectionUtils.mapOf());
+        return new ModelAndView("search", CollectionUtils.mapOf("searchCommand", null, "searchResponse", null));
     }
 
     @Post(uri = "/search", consumes = MediaType.APPLICATION_FORM_URLENCODED)

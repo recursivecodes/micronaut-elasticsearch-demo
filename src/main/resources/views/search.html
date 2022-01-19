@@ -4,6 +4,8 @@
     <title>Micronaut Elasticsearch Demo</title>
 </head>
 <body>
+<!--/*@thymesVar id="searchCommand" type="codes.recursive.command.SearchCommand"*/-->
+<!--/*@thymesVar id="searchResponse" type="org.elasticsearch.action.search.SearchResponse"*/-->
 <section>
     <h1>Micronaut Elasticsearch Demo</h1>
     <div class="pb-3">
@@ -11,14 +13,16 @@
     </div>
     <form action="/search" method="post" id="search" name="search" class="needs-validation" novalidate>
         <div class="row g-3">
-            <div class="col-sm-10">
-                <input th:value="${searchCommand != null} ? ${#objects.nullSafe(searchCommand.searchString, '')} : ''" type="text" class="form-control" name="searchString" id="searchString" placeholder="Search term..." value="" required />
-                <div class="invalid-feedback">
-                    Please enter a search string!
+            <div class="col-sm-12">
+                <div class="input-group has-validation">
+                    <label for="searchString" class="sr-only">Search String</label>
+                    <input th:value="${searchCommand != null} ? ${#objects.nullSafe(searchCommand.searchString, '')} : ''" type="search" class="form-control" name="searchString" id="searchString" placeholder="Search term..." value="" required />
+                    <button class="btn btn-primary" type="submit">Search</button>
+                    <div class="invalid-feedback">
+                        Please enter a search string!
+                    </div>
                 </div>
-            </div>
-            <div class="col-sm-2">
-                <button class="btn btn-primary" type="submit">Search</button>
+
             </div>
         </div>
     </form>
@@ -27,22 +31,40 @@
         <h2>Showing <span th:text="${searchResponse.getHits().getTotalHits().value} < ${searchCommand.max} ? ${searchResponse.getHits().totalHits.value} : ${searchCommand.max}"></span> of
             <span th:text="${searchResponse.getHits().getTotalHits().value}"></span> Hits (Took <span th:text="${searchResponse.getTook().getMillis()}"></span>ms)</h2>
         <div th:each="response, status: ${searchResponse.getHits()}">
+            <!--/*@thymesVar id="response" type="org.elasticsearch.search.SearchHit"*/-->
             <div class="row">
                 <div class="col-sm-12">
-                    <p>Result: <span th:text="${status.index}"></span> (ID: <span th:text="${response.getSourceAsMap().id}"></span>) |
-                        <a th:href="@{'/delete/' + ${response.getSourceAsMap().id}}">delete</a></p>
+                    <p>Result: <span th:text="${status.index}"></span> (ID: <span th:text="${response.getSourceAsMap().get('id')}"></span>) |
+                        <a th:href="@{'/delete/' + ${response.getSourceAsMap().get('id')}}">delete</a></p>
                     <ul>
-                        <li>Favorite Artist: <span th:text="${response.getSourceAsMap().favoriteArtist}"></span></li>
-                        <li>Favorite Beer: <span th:text="${response.getSourceAsMap().favoriteBeer}"></span></li>
-                        <li>Favorite Book: <span th:text="${response.getSourceAsMap().favoriteBook}"></span></li>
-                        <li>Favorite Cat: <span th:text="${response.getSourceAsMap().favoriteCat}"></span></li>
-                        <li>Favorite Superhero: <span th:text="${response.getSourceAsMap().favoriteSuperhero}"></span></li>
-                        <li>Favorite Color: <span th:text="${response.getSourceAsMap().favoriteColor}"></span></li>
+                        <li>Favorite Artist: <span th:text="${response.getSourceAsMap().get('favoriteArtist')}"></span></li>
+                        <li>Favorite Beer: <span th:text="${response.getSourceAsMap().get('favoriteBeer')}"></span></li>
+                        <li>Favorite Book: <span th:text="${response.getSourceAsMap().get('favoriteBook')}"></span></li>
+                        <li>Favorite Cat: <span th:text="${response.getSourceAsMap().get('favoriteCat')}"></span></li>
+                        <li>Favorite Superhero: <span th:text="${response.getSourceAsMap().get('favoriteSuperhero')}"></span></li>
+                        <li>Favorite Color: <span th:text="${response.getSourceAsMap().get('favoriteColor')}"></span></li>
                     </ul>
                 </div>
             </div>
         </div>
     </div>
+
+    <script>
+      (() => {
+        'use strict';
+        const forms = document.querySelectorAll('.needs-validation');
+        Array.prototype.slice.call(forms).forEach((form) => {
+          form.addEventListener('submit', (event) => {
+            if (!form.checkValidity()) {
+              event.preventDefault();
+              event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+          }, false);
+        });
+      })();
+    </script>
 </section>
+
 </body>
 </html>
