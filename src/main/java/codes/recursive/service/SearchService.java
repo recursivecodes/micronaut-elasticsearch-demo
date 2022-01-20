@@ -1,7 +1,7 @@
 package codes.recursive.service;
 
 import codes.recursive.command.SearchCommand;
-import codes.recursive.domain.Favorite;
+import codes.recursive.domain.BlogPost;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.core.annotation.Introspected;
@@ -56,12 +56,9 @@ public class SearchService {
         // schema for documents
         Map<String, Object> schema = new HashMap<>();
         schema.put("id", CollectionUtils.mapOf("type", "long"));
-        schema.put("favoriteMovie", CollectionUtils.mapOf("type", "text"));
-        schema.put("favoriteCity", CollectionUtils.mapOf("type", "text"));
-        schema.put("favoriteAnimal", CollectionUtils.mapOf("type", "text"));
-        schema.put("favoriteCarModel", CollectionUtils.mapOf("type", "text"));
-        schema.put("favoriteColor", CollectionUtils.mapOf("type", "text"));
-        schema.put("favoritePlant", CollectionUtils.mapOf("type", "text"));
+        schema.put("title", CollectionUtils.mapOf("type", "text"));
+        schema.put("description", CollectionUtils.mapOf("type", "text"));
+        schema.put("article", CollectionUtils.mapOf("type", "text"));
 
         Map<String, Object> mapping = new HashMap<>();
         mapping.put("properties", schema);
@@ -75,12 +72,12 @@ public class SearchService {
         return searchClient.indices().exists(getIndexRequest, RequestOptions.DEFAULT);
     }
 
-    public void indexFavorite(Favorite favorite, String indexName, ActionListener<IndexResponse> listener) {
+    public void indexBlogPost(BlogPost blogPost, String indexName, ActionListener<IndexResponse> listener) {
         ObjectMapper mapper = new ObjectMapper();
         IndexRequest indexRequest = new IndexRequest(indexName);
         try {
-            indexRequest.id(favorite.getId().toString()).source(
-                    mapper.writeValueAsString(favorite),
+            indexRequest.id(blogPost.getId().toString()).source(
+                    mapper.writeValueAsString(blogPost),
                     XContentType.JSON
             );
         } catch (JsonProcessingException e) {
@@ -89,8 +86,8 @@ public class SearchService {
         searchClient.indexAsync(indexRequest, RequestOptions.DEFAULT, listener);
     }
 
-    public void deleteFavorite(Favorite favorite, String indexName, ActionListener<DeleteResponse> listener) {
-        DeleteRequest deleteIndexRequest = new DeleteRequest(indexName, favorite.getId().toString());
+    public void deleteBlogPost(BlogPost blogPost, String indexName, ActionListener<DeleteResponse> listener) {
+        DeleteRequest deleteIndexRequest = new DeleteRequest(indexName, blogPost.getId().toString());
         searchClient.deleteAsync(deleteIndexRequest, RequestOptions.DEFAULT, listener);
     }
 

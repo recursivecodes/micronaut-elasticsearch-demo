@@ -1,6 +1,6 @@
 package codes.recursive.listener;
 
-import codes.recursive.domain.Favorite;
+import codes.recursive.domain.BlogPost;
 import codes.recursive.service.SearchService;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Property;
@@ -15,13 +15,13 @@ import org.slf4j.LoggerFactory;
 
 
 @Factory
-public class FavoriteListeners {
-    private static final Logger LOG = LoggerFactory.getLogger(FavoriteListeners.class);
+public class BlogPostListeners {
+    private static final Logger LOG = LoggerFactory.getLogger(BlogPostListeners.class);
     private final SearchService searchService;
     private final String indexName;
     private final ActionListener<IndexResponse> indexListener;
 
-    public FavoriteListeners(
+    public BlogPostListeners(
             SearchService searchService,
             @Property(name = "codes.recursive.elasticsearch.index.name") String indexName
     ) {
@@ -47,51 +47,51 @@ public class FavoriteListeners {
     }
 
     @Singleton
-    PrePersistEventListener<Favorite> beforeFavoritePersist() {
-        return (favorite) -> true;
+    PrePersistEventListener<BlogPost> beforeBlogPostPersist() {
+        return (blogPost) -> true;
     }
 
     @Singleton
-    PostPersistEventListener<Favorite> afterFavoritePersist() {
-        return (favorite) -> {
-            LOG.info("Indexing favorite: {}", favorite.getId() );
-            searchService.indexFavorite(favorite, indexName, indexListener);
+    PostPersistEventListener<BlogPost> afterBlogPostPersist() {
+        return (blogPost) -> {
+            LOG.info("Indexing blogPost: {}", blogPost.getId() );
+            searchService.indexBlogPost(blogPost, indexName, indexListener);
         };
     }
 
     @Singleton
-    PreUpdateEventListener<Favorite> beforeFavoriteUpdate() {
-        return (favorite) -> true;
+    PreUpdateEventListener<BlogPost> beforeBlogPostUpdate() {
+        return (blogPost) -> true;
     }
 
     @Singleton
-    PostUpdateEventListener<Favorite> afterFavoriteUpdate() {
-        return (favorite) -> {
-            LOG.info("Indexing favorite: {}", favorite.getId() );
-            searchService.indexFavorite(favorite, indexName, indexListener);
+    PostUpdateEventListener<BlogPost> afterBlogPostUpdate() {
+        return (blogPost) -> {
+            LOG.info("Indexing blogPost: {}", blogPost.getId() );
+            searchService.indexBlogPost(blogPost, indexName, indexListener);
         };
     }
 
     @Singleton
-    PreRemoveEventListener<Favorite> beforeFavoriteRemove() {
-        return (favorite) -> true;
+    PreRemoveEventListener<BlogPost> beforeBlogPostRemove() {
+        return (blogPost) -> true;
     }
 
     @Singleton
-    PostRemoveEventListener<Favorite> afterFavoriteRemove() {
-        return (favorite) -> {
-            LOG.info("Deleting indexed favorite: {}", favorite );
+    PostRemoveEventListener<BlogPost> afterBlogPostRemove() {
+        return (blogPost) -> {
+            LOG.info("Deleting indexed blogPost: {}", blogPost );
             ActionListener<DeleteResponse> actionListener = new ActionListener<>() {
                 @Override
                 public void onResponse(DeleteResponse deleteResponse) {
-                    LOG.info("Index deleted: {}", favorite.getId());
+                    LOG.info("Index deleted: {}", blogPost.getId());
                 }
                 @Override
                 public void onFailure(Exception e) {
                     e.printStackTrace();
                 }
             };
-            searchService.deleteFavorite(favorite, indexName, actionListener);
+            searchService.deleteBlogPost(blogPost, indexName, actionListener);
         };
     }
 }

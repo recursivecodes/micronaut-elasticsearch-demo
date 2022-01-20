@@ -1,54 +1,44 @@
 package codes.recursive;
 
-import codes.recursive.domain.Favorite;
-import codes.recursive.repository.FavoriteRepository;
+import codes.recursive.domain.BlogPost;
+import codes.recursive.repository.BlogPostRepository;
 import codes.recursive.service.SearchService;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.javafaker.Faker;
+import com.sun.syndication.feed.synd.SyndContentImpl;
+import com.sun.syndication.feed.synd.SyndEntry;
+import com.sun.syndication.feed.synd.SyndFeed;
+import com.sun.syndication.io.SyndFeedInput;
+import com.sun.syndication.io.XmlReader;
 import io.micronaut.context.annotation.Property;
 import io.micronaut.context.event.ApplicationEventListener;
-import io.micronaut.core.util.CollectionUtils;
+import io.micronaut.http.codec.MediaTypeCodec;
 import io.micronaut.runtime.server.event.ServerStartupEvent;
 import jakarta.inject.Singleton;
 import lombok.SneakyThrows;
-import org.elasticsearch.action.ActionListener;
-import org.elasticsearch.action.bulk.BulkItemResponse;
-import org.elasticsearch.action.bulk.BulkRequest;
-import org.elasticsearch.action.bulk.BulkResponse;
-import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.index.IndexResponse;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.client.indices.CreateIndexRequest;
+import org.apache.commons.text.StringEscapeUtils;
 import org.elasticsearch.client.indices.CreateIndexResponse;
-import org.elasticsearch.client.indices.GetIndexRequest;
-import org.elasticsearch.xcontent.XContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.StreamSupport;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 @Singleton
 public class Bootstrap implements ApplicationEventListener<ServerStartupEvent> {
 
     private static final Logger LOG = LoggerFactory.getLogger(Bootstrap.class);
-    private final FavoriteRepository favoriteRepository;
     private final SearchService searchService;
+    private final BlogPostRepository blogPostRepository;
     private final String indexName;
     private final String indexType;
 
     public Bootstrap(
-            FavoriteRepository favoriteRepository,
             SearchService searchService,
+            BlogPostRepository blogPostRepository,
             @Property(name = "codes.recursive.elasticsearch.index.name") String indexName,
-            @Property(name = "codes.recursive.elasticsearch.index.type") String indexType
-    ) {
-        this.favoriteRepository = favoriteRepository;
+            @Property(name = "codes.recursive.elasticsearch.index.type") String indexType) {
         this.searchService = searchService;
+        this.blogPostRepository = blogPostRepository;
         this.indexName = indexName;
         this.indexType = indexType;
     }
@@ -72,25 +62,29 @@ public class Bootstrap implements ApplicationEventListener<ServerStartupEvent> {
 
         // clean up favorites (delete all)
         LOG.info("Deleting records...");
-        favoriteRepository.deleteAll();
+        blogPostRepository.deleteAll();
         LOG.info("Records deleted!");
 
-        // create favorites records (will be indexed automatically)
-        LOG.info("Creating 500 records...");
-        for(int i=0; i<500; i++) {
-            Faker faker = new Faker();
-            Favorite favorite = Favorite.builder()
-                    .favoriteArtist(faker.artist().name())
-                    .favoriteBeer(faker.beer().name())
-                    .favoriteBook(faker.book().title())
-                    .favoriteColor(faker.color().name())
-                    .favoriteCat(faker.cat().breed())
-                    .favoriteSuperhero(faker.superhero().name())
-                    .build();
-            favoriteRepository.save(favorite);
-        }
-        LOG.info("Records created in DB!");
+        LOG.info("Importing blog posts...");
+        URL feedSource = new URL("https://recursive.codes/blog/feed");
+        SyndFeedInput input = new SyndFeedInput();
+        SyndFeed feed = input.build(new XmlReader(feedSource));
 
+        List<BlogPost> blogPosts = new ArrayList<>();
+        feed.getEntries().stream().forEach( (s) -> {
+            SyndEntry item = (SyndEntry) s;
+            String article = ((SyndContentImpl) item.getContents().get(0)).getValue();
+            article = StringEscapeUtils.unescapeHtml4(article);
+            BlogPost blogPost = BlogPost.builder()
+                            .title(item.getTitle())
+                            .description(item.getDescription().getValue())
+                            .article(article)
+                            .build();
+            blogPosts.add(blogPost);
+        });
+        blogPostRepository.saveAll(blogPosts);
+        // create favorites records (will be indexed automatically)
+        LOG.info("Blog posts imported!");
         LOG.info("ServerStartupEvent handler end...");
     }
 }

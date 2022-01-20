@@ -9,7 +9,7 @@
 <section>
     <h1>Micronaut Elasticsearch Demo</h1>
     <div class="pb-3">
-        <a class="link-primary" href="/favorite/edit">Create A New Entry</a>
+        <a class="link-primary" href="/blogPost/edit">Create A New Post</a>
     </div>
     <form action="/search" method="post" id="search" name="search" class="needs-validation" novalidate>
         <div class="row g-3">
@@ -37,12 +37,9 @@
                     <p>Result: <span th:text="${status.index}"></span> (ID: <span th:text="${response.getSourceAsMap().get('id')}"></span>) |
                         <a th:href="@{'/delete/' + ${response.getSourceAsMap().get('id')}}">delete</a></p>
                     <ul>
-                        <li>Favorite Artist: <span th:text="${response.getSourceAsMap().get('favoriteArtist')}"></span></li>
-                        <li>Favorite Beer: <span th:text="${response.getSourceAsMap().get('favoriteBeer')}"></span></li>
-                        <li>Favorite Book: <span th:text="${response.getSourceAsMap().get('favoriteBook')}"></span></li>
-                        <li>Favorite Cat: <span th:text="${response.getSourceAsMap().get('favoriteCat')}"></span></li>
-                        <li>Favorite Superhero: <span th:text="${response.getSourceAsMap().get('favoriteSuperhero')}"></span></li>
-                        <li>Favorite Color: <span th:text="${response.getSourceAsMap().get('favoriteColor')}"></span></li>
+                        <li>Title: <span th:text="${response.getSourceAsMap().get('title')}"></span></li>
+                        <li>Description: <span th:text="${response.getSourceAsMap().get('description')}"></span></li>
+                        <li>Article: <span th:text="${response.getSourceAsMap().get('article')}"></span></li>
                     </ul>
                 </div>
             </div>

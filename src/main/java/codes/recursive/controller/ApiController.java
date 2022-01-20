@@ -1,8 +1,8 @@
 package codes.recursive.controller;
 
 import codes.recursive.command.SearchCommand;
-import codes.recursive.domain.Favorite;
-import codes.recursive.repository.FavoriteRepository;
+import codes.recursive.domain.BlogPost;
+import codes.recursive.repository.BlogPostRepository;
 import codes.recursive.service.SearchService;
 import io.micronaut.context.annotation.Property;
 import io.micronaut.core.util.CollectionUtils;
@@ -18,38 +18,38 @@ import java.util.Optional;
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class ApiController {
 
-    private final FavoriteRepository favoriteRepository;
+    private final BlogPostRepository blogPostRepository;
     private final SearchService searchService;
     private final String indexName;
 
     public ApiController(
-            FavoriteRepository favoriteRepository,
+            BlogPostRepository blogPostRepository,
             SearchService searchService,
             @Property(name = "codes.recursive.elasticsearch.index.name") String indexName
     ) {
-        this.favoriteRepository = favoriteRepository;
+        this.blogPostRepository = blogPostRepository;
         this.searchService = searchService;
         this.indexName = indexName;
     }
 
-    @Post(uri = "/favorite", produces = MediaType.APPLICATION_JSON)
-    public HttpResponse saveFavorite(@Body Favorite favorite) {
+    @Post(uri = "/blogPost", produces = MediaType.APPLICATION_JSON)
+    public HttpResponse saveFavorite(@Body BlogPost blogPost) {
         return HttpResponse.created(
-                favoriteRepository.save(favorite)
+                blogPostRepository.save(blogPost)
         );
     }
 
-    @Put(uri = "/favorite", produces = MediaType.APPLICATION_JSON)
-    public HttpResponse updateFavorite(@Body Favorite favorite) {
+    @Put(uri = "/blogPost", produces = MediaType.APPLICATION_JSON)
+    public HttpResponse updateFavorite(@Body BlogPost blogPost) {
         return HttpResponse.ok(
-                favoriteRepository.update(favorite)
+                blogPostRepository.update(blogPost)
         );
     }
 
     @Get(uri="/delete/{id}")
     public HttpResponse deleteFavorite(Long id) {
-        Optional<Favorite> favorite = favoriteRepository.findById(id);
-        favorite.ifPresent(favoriteRepository::delete);
+        Optional<BlogPost> blogPost = blogPostRepository.findById(id);
+        blogPost.ifPresent(blogPostRepository::delete);
         return HttpResponse.noContent();
     }
 

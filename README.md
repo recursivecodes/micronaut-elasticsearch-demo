@@ -2,14 +2,14 @@
 
 ## Test
 
-### Create Favorite
+### Create Blog Post
 
 ```shell
 $ curl -i \
   -X POST \
   -H "Content-Type: application/json" \
-  -d '{"favoriteArtist": "Van Gogh", "favoriteBeer": "Busch Light", "favoriteBook": "None", "favoriteCat": "British Shorthair", "favoriteColor": "Magenta", "favoriteSuperhero": "Snowman"}' \
-  http://localhost:8080/api/favorite 
+  -d '{"title": "New Blog Post", "description": "A new blog post for your reading pleasure.", "article" : "<p>Hello, world!</p>"}' \
+  http://localhost:8080/api/blogPost 
 ```
 
 ### Search
@@ -17,7 +17,7 @@ $ curl -i \
 ```shell
 $ curl -s \
   -X POST \
-  -d 'searchString=blue' \
+  -d 'searchString=Java' \
   -d 'max=5' \
   http://localhost:8080/search | html2text
 ```
@@ -28,6 +28,6 @@ Using API:
 $ curl -s \
   -X POST \
   -H "Content-Type: application/json" \
-  -d '{"searchString": "blue", "offset": 0, "max": 5}' \
+  -d '{"searchString": "java", "offset": 0, "max": 5}' \
   http://localhost:8080/api/search | jq
 ```

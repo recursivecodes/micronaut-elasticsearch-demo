@@ -1,70 +1,43 @@
 <!DOCTYPE html>
 <html lang="en" th:replace="~{layouts/main :: layout(~{::title}, ~{::section})}" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Create Favorite</title>
+    <title>Create Blog Post</title>
 </head>
 <body>
 <section>
-    <h1>Create Favorite</h1>
+    <h1>Create Blog Post</h1>
     <!--/*@thymesVar id="saved" type="java.lang.Boolean"*/-->
     <div th:if="${saved != null}" class="alert alert-info">
-        Your favorites have been saved.
+        Your blog post has been saved.
     </div>
     <div class="pb-3">
-        <a class="link-primary" href="/search">Search Favorites</a>
+        <a class="link-primary" href="/search">Search Blog Posts</a>
     </div>
     <form action="/favorite/edit" method="post" id="search" name="search" class="needs-validation" novalidate>
         <div class="row g-3 mb-3">
             <div class="col-sm-6">
-                <label for="favoriteArtist" class="form-label">Favorite Artist</label>
-                <input type="text" class="form-control" name="favoriteArtist" id="favoriteArtist" value="" required />
+                <label for="title" class="form-label">Title</label>
+                <input type="text" class="form-control" name="title" id="title" value="" required />
                 <div class="invalid-feedback">
-                    Please enter favorite artist!
+                    Please enter title!
                 </div>
             </div>
         </div>
         <div class="row g-3 mb-3">
             <div class="col-sm-6">
-                <label for="favoriteBeer" class="form-label">Favorite Beer</label>
-                <input type="text" class="form-control" name="favoriteBeer" id="favoriteBeer" value="" required />
+                <label for="description" class="form-label">Description</label>
+                <textarea class="form-control" name="description" id="description" required></textarea>
                 <div class="invalid-feedback">
-                    Please enter favorite beer!
+                    Please enter description!
                 </div>
             </div>
         </div>
         <div class="row g-3 mb-3">
             <div class="col-sm-6">
-                <label for="favoriteBook" class="form-label">Favorite Book</label>
-                <input type="text" class="form-control" name="favoriteBook" id="favoriteBook" value="" required />
+                <label for="article" class="form-label">Article</label>
+                <textarea class="form-control" name="article" id="article"></textarea>
                 <div class="invalid-feedback">
-                    Please enter favorite book!
-                </div>
-            </div>
-        </div>
-        <div class="row g-3 mb-3">
-            <div class="col-sm-6">
-                <label for="favoriteColor" class="form-label">Favorite Color</label>
-                <input type="text" class="form-control" name="favoriteColor" id="favoriteColor" value="" required />
-                <div class="invalid-feedback">
-                    Please enter favorite color!
-                </div>
-            </div>
-        </div>
-        <div class="row g-3 mb-3">
-            <div class="col-sm-6">
-                <label for="favoriteCat" class="form-label">Favorite Cat</label>
-                <input type="text" class="form-control" name="favoriteCat" id="favoriteCat" value="" required />
-                <div class="invalid-feedback">
-                    Please enter favorite cat!
-                </div>
-            </div>
-        </div>
-        <div class="row g-3 mb-3">
-            <div class="col-sm-6">
-                <label for="favoriteSuperhero" class="form-label">Favorite Superhero</label>
-                <input type="text" class="form-control" name="favoriteSuperhero" id="favoriteSuperhero" value="" required />
-                <div class="invalid-feedback">
-                    Please enter favorite superhero!
+                    Please enter article!
                 </div>
             </div>
         </div>

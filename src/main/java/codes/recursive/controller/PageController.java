@@ -1,8 +1,8 @@
 package codes.recursive.controller;
 
 import codes.recursive.command.SearchCommand;
-import codes.recursive.domain.Favorite;
-import codes.recursive.repository.FavoriteRepository;
+import codes.recursive.domain.BlogPost;
+import codes.recursive.repository.BlogPostRepository;
 import codes.recursive.service.SearchService;
 import io.micronaut.context.annotation.Property;
 import io.micronaut.core.util.CollectionUtils;
@@ -22,16 +22,16 @@ import java.util.Optional;
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class PageController {
 
-    private final FavoriteRepository favoriteRepository;
+    private final BlogPostRepository blogPostRepository;
     private final SearchService searchService;
     private final String indexName;
 
     public PageController(
-            FavoriteRepository favoriteRepository,
+            BlogPostRepository blogPostRepository,
             SearchService searchService,
             @Property(name = "codes.recursive.elasticsearch.index.name") String indexName
     ) {
-        this.favoriteRepository = favoriteRepository;
+        this.blogPostRepository = blogPostRepository;
         this.searchService = searchService;
         this.indexName = indexName;
     }
@@ -41,14 +41,14 @@ public class PageController {
         return HttpResponse.redirect(URI.create("/search"));
     }
 
-    @Get("/favorite/edit")
+    @Get("/blogPost/edit")
     public ModelAndView create() {
         return new ModelAndView("edit", CollectionUtils.mapOf());
     }
 
-    @Post(value = "/favorite/edit", consumes = MediaType.APPLICATION_FORM_URLENCODED)
-    public ModelAndView create(@Body Favorite favorite) {
-        favoriteRepository.save(favorite);
+    @Post(value = "/blogPost/edit", consumes = MediaType.APPLICATION_FORM_URLENCODED)
+    public ModelAndView create(@Body BlogPost blogPost) {
+        blogPostRepository.save(blogPost);
         return new ModelAndView("edit", CollectionUtils.mapOf(
                 "saved", true
         ));
@@ -56,8 +56,8 @@ public class PageController {
 
     @Get(uri="/delete/{id}")
     public HttpResponse<String> deleteFavorite(Long id) {
-        Optional<Favorite> favorite = favoriteRepository.findById(id);
-        favorite.ifPresent(favoriteRepository::delete);
+        Optional<BlogPost> blogPost = blogPostRepository.findById(id);
+        blogPost.ifPresent(blogPostRepository::delete);
         return HttpResponse.redirect(URI.create("/search"));
     }
 
