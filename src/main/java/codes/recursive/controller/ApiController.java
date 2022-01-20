@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 @Controller("/api")
-@SuppressWarnings({ "unchecked", "rawtypes" })
+@SuppressWarnings({"rawtypes" })
 public class ApiController {
 
     private final BlogPostRepository blogPostRepository;

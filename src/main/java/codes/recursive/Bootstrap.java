@@ -23,23 +23,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Singleton
+@SuppressWarnings("unused")
 public class Bootstrap implements ApplicationEventListener<ServerStartupEvent> {
 
     private static final Logger LOG = LoggerFactory.getLogger(Bootstrap.class);
     private final SearchService searchService;
     private final BlogPostRepository blogPostRepository;
     private final String indexName;
-    private final String indexType;
 
     public Bootstrap(
             SearchService searchService,
             BlogPostRepository blogPostRepository,
-            @Property(name = "codes.recursive.elasticsearch.index.name") String indexName,
-            @Property(name = "codes.recursive.elasticsearch.index.type") String indexType) {
+            @Property(name = "codes.recursive.elasticsearch.index.name") String indexName) {
         this.searchService = searchService;
         this.blogPostRepository = blogPostRepository;
         this.indexName = indexName;
-        this.indexType = indexType;
     }
 
     @SneakyThrows

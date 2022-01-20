@@ -33,12 +33,11 @@ import java.util.Map;
 
 @Introspected
 @Singleton
-/**
- * SearchService.java
- * Uses deprecated RestHighLevelClient - replace with ElasticsearchClient when `io.micronaut.elasticsearch:micronaut-elasticsearch:4.2.0` is available
- */
+@SuppressWarnings({"unused", "deprecation"})
 public class SearchService {
-
+    /*
+     *   Uses deprecated RestHighLevelClient - replace with ElasticsearchClient when `io.micronaut.elasticsearch:micronaut-elasticsearch:4.2.0` is available
+    */
     private final RestHighLevelClient searchClient;
 
     public SearchService(RestHighLevelClient searchClient) {

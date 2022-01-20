@@ -19,7 +19,7 @@ import java.net.URI;
 import java.util.Optional;
 
 @Controller()
-@SuppressWarnings({ "unchecked", "rawtypes" })
+@SuppressWarnings({ "unchecked", "rawtypes", "unused"})
 public class PageController {
 
     private final BlogPostRepository blogPostRepository;

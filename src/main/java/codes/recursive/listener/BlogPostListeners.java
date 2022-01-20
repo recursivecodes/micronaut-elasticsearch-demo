@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 
 @Factory
+@SuppressWarnings({"unused"})
 public class BlogPostListeners {
     private static final Logger LOG = LoggerFactory.getLogger(BlogPostListeners.class);
     private final SearchService searchService;
