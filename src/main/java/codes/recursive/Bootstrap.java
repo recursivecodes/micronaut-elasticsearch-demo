@@ -5,6 +5,7 @@ import codes.recursive.repository.BlogPostRepository;
 import codes.recursive.service.SearchService;
 import com.sun.syndication.feed.synd.SyndContentImpl;
 import com.sun.syndication.feed.synd.SyndEntry;
+import com.sun.syndication.feed.synd.SyndEntryImpl;
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.XmlReader;
@@ -22,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Singleton
 public class Bootstrap implements ApplicationEventListener<ServerStartupEvent> {
@@ -45,6 +47,7 @@ public class Bootstrap implements ApplicationEventListener<ServerStartupEvent> {
 
     @SneakyThrows
     @Override
+    @SuppressWarnings({"unchecked"})
     public void onApplicationEvent(ServerStartupEvent event) {
         LOG.info("ServerStartupEvent handler begin...");
 
@@ -71,7 +74,7 @@ public class Bootstrap implements ApplicationEventListener<ServerStartupEvent> {
         SyndFeed feed = input.build(new XmlReader(feedSource));
 
         List<BlogPost> blogPosts = new ArrayList<>();
-        feed.getEntries().stream().forEach( (s) -> {
+        feed.getEntries().forEach( (s) -> {
             SyndEntry item = (SyndEntry) s;
             String article = ((SyndContentImpl) item.getContents().get(0)).getValue();
             article = StringEscapeUtils.unescapeHtml4(article);
