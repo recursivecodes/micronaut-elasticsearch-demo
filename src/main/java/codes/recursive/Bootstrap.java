@@ -5,13 +5,11 @@ import codes.recursive.repository.BlogPostRepository;
 import codes.recursive.service.SearchService;
 import com.sun.syndication.feed.synd.SyndContentImpl;
 import com.sun.syndication.feed.synd.SyndEntry;
-import com.sun.syndication.feed.synd.SyndEntryImpl;
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.XmlReader;
 import io.micronaut.context.annotation.Property;
 import io.micronaut.context.event.ApplicationEventListener;
-import io.micronaut.http.codec.MediaTypeCodec;
 import io.micronaut.runtime.server.event.ServerStartupEvent;
 import jakarta.inject.Singleton;
 import lombok.SneakyThrows;
@@ -23,7 +21,6 @@ import org.slf4j.LoggerFactory;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 @Singleton
 public class Bootstrap implements ApplicationEventListener<ServerStartupEvent> {
