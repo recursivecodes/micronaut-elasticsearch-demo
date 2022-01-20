@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Singleton
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "unchecked"})
 public class Bootstrap implements ApplicationEventListener<ServerStartupEvent> {
 
     private static final Logger LOG = LoggerFactory.getLogger(Bootstrap.class);
@@ -42,7 +42,6 @@ public class Bootstrap implements ApplicationEventListener<ServerStartupEvent> {
 
     @SneakyThrows
     @Override
-    @SuppressWarnings({"unchecked"})
     public void onApplicationEvent(ServerStartupEvent event) {
         LOG.info("ServerStartupEvent handler begin...");
 
