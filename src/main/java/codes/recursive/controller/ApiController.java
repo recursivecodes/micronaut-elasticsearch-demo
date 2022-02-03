@@ -1,5 +1,6 @@
 package codes.recursive.controller;
 
+import co.elastic.clients.elasticsearch.core.SearchResponse;
 import codes.recursive.command.SearchCommand;
 import codes.recursive.domain.BlogPost;
 import codes.recursive.repository.BlogPostRepository;
@@ -9,7 +10,6 @@ import io.micronaut.core.util.CollectionUtils;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.*;
-import org.elasticsearch.action.search.SearchResponse;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -58,10 +58,8 @@ public class ApiController {
         SearchResponse searchResponse = searchService.search(searchCommand, indexName);
         return HttpResponse.ok(
                 CollectionUtils.mapOf(
-                        "searchCommand",
-                        searchCommand,
-                        "searchResponse",
-                        searchResponse
+                        "searchCommand", searchCommand,
+                        "searchResponse", searchResponse
                 )
         );
     }

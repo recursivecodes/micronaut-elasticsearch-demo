@@ -1,5 +1,6 @@
 package codes.recursive;
 
+import co.elastic.clients.elasticsearch.indices.CreateIndexResponse;
 import codes.recursive.domain.BlogPost;
 import codes.recursive.repository.BlogPostRepository;
 import codes.recursive.service.SearchService;
@@ -14,7 +15,6 @@ import io.micronaut.runtime.server.event.ServerStartupEvent;
 import jakarta.inject.Singleton;
 import lombok.SneakyThrows;
 import org.apache.commons.text.StringEscapeUtils;
-import org.elasticsearch.client.indices.CreateIndexResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +53,7 @@ public class Bootstrap implements ApplicationEventListener<ServerStartupEvent> {
             LOG.info("Creating index: {}", indexName);
             CreateIndexResponse createIndexResponse = searchService.createIndex(indexName);
             if (createIndexResponse != null) {
-                LOG.info("Create index response ack: {}", createIndexResponse.isAcknowledged());
+                LOG.info("Create index response ack: {}", createIndexResponse.acknowledged());
             }
         }
 

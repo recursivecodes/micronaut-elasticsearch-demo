@@ -9,7 +9,7 @@ micronaut:
         paths: "classpath:public"
 elasticsearch:
   httpHosts:
-    - "http://localhost:9200"
+    - "https://docker.local:9200"
   cluster:
     name:
   request:

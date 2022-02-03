@@ -5,11 +5,55 @@
 ### Create Blog Post
 
 ```shell
-$ curl -i \
+POST_ID=$(curl -i \
   -X POST \
   -H "Content-Type: application/json" \
   -d '{"title": "New Blog Post", "description": "A new blog post for your reading pleasure.", "article" : "<p>Hello, world!</p>"}' \
-  http://localhost:8080/api/blogPost 
+  http://localhost:8080/api/blogPost) | jq .data.id 
+```
+
+Response:
+
+```shell
+HTTP/1.1 201 Created
+date: Thu, 3 Feb 2022 16:13:22 GMT
+Content-Type: application/json
+content-length: 125
+connection: keep-alive
+{"id":26,"title":"New Blog Post","description":"A new blog post for your reading pleasure.","article":"<p>Hello, world!</p>"}%
+```
+
+Save ID:
+
+```shell
+$ POST_ID=$(curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"title": "New Blog Post", "description": "A new blog post for your reading pleasure.", "article" : "<p>Hello, world!</p>"}' \
+  http://localhost:8080/api/blogPost | jq .id)
+```
+
+### Update Blog Post
+
+```shell
+$ curl -i \
+  -X PUT \
+  -H "Content-Type: application/json" \
+  -d '{"id": '$POST_ID', "title": "New Blog Post", "description": "An updated blog post for your reading pleasure.", "article" : "<p>Hello, world!</p>"}' \
+  http://localhost:8080/api/blogPost
+```
+
+### Delete Blog Post
+
+```shell
+$ curl -i localhost:8080/api/delete/$POST_ID
+```
+
+Response:
+
+```shell
+HTTP/1.1 204 No Content
+date: Thu, 3 Feb 2022 16:13:57 GMT
+connection: keep-alive
 ```
 
 ### Search

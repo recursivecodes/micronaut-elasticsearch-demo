@@ -26,22 +26,34 @@
             </div>
         </div>
     </form>
+    <!--/*@thymesVar id="searchResponse" type="co.elastic.clients.elasticsearch.core.SearchResponse"*/-->
 
     <div th:if="${searchResponse != null}" class="pt-3">
-        <h2>Showing <span th:text="${searchResponse.getHits().getTotalHits().value} < ${searchCommand.max} ? ${searchResponse.getHits().totalHits.value} : ${searchCommand.max}"></span> of
-            <span th:text="${searchResponse.getHits().getTotalHits().value}"></span> Hits (Took <span th:text="${searchResponse.getTook().getMillis()}"></span>ms)</h2>
-        <div th:each="response, status: ${searchResponse.getHits()}">
-            <!--/*@thymesVar id="response" type="org.elasticsearch.search.SearchHit"*/-->
+        <h2>Showing <span th:text="${searchResponse.hits.total.value} < ${searchCommand.max} ? ${searchResponse.hits.total.value} : ${searchCommand.max}"></span> of
+            <span th:text="${searchResponse.hits.total.value}"></span> Hits (Took <span th:text="${searchResponse.took}"></span>ms)</h2>
+        <div th:each="response, status: ${searchResponse.hits.hits}">
+            <!--/*@thymesVar id="response" type="co.elastic.clients.elasticsearch.core.search.Hit<BlogPost>"*/-->
             <div class="row">
                 <div class="col-sm-12">
-                    <p>Result: <span th:text="${status.index}"></span> (ID: <span th:text="${response.getSourceAsMap().get('id')}"></span>) |
-                        <a th:href="@{'/delete/' + ${response.getSourceAsMap().get('id')}}">delete</a></p>
+                    <p>Result: <span th:text="${status.index}"></span> (ID: <span th:text="${response.source.getId()}"></span>) |
+                        <a th:href="@{'/delete/' + ${response.source.getId()}}">delete</a></p>
                     <ul>
-                        <li>Title: <span th:text="${response.getSourceAsMap().get('title')}"></span></li>
-                        <li>Description: <span th:text="${response.getSourceAsMap().get('description')}"></span></li>
-                        <li>Article: <span th:text="${response.getSourceAsMap().get('article')}"></span></li>
+                        <li>
+                            <span th:text="${response.source.getArticle()}" class="d-none article-content"></span>
+                            Title: <a href="#" class="show-offcanvas" th:text="${response.source.getTitle()}"></a>
+                        </li>
+                        <li>Description: <span th:utext="${response.source.getDescription()}"></span></li>
+                        <!--<li>Article: <span th:utext="${response.source.getArticle()}"></span></li>-->
                     </ul>
                 </div>
+            </div>
+        </div>
+        <div class="offcanvas offcanvas-end w-75" tabindex="-1" id="postDetails" aria-labelledby="postDetailsLbl">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="postDetailsLbl">Blog Post</h5>
+                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body" id="article-body">
             </div>
         </div>
     </div>
@@ -58,6 +70,18 @@
             }
             form.classList.add('was-validated');
           }, false);
+        });
+
+        document.querySelectorAll('.show-offcanvas').forEach(t => {
+            t.addEventListener('click', function(evt) {
+                const a = evt.currentTarget;
+                const article = a.previousElementSibling.innerHTML;
+                const temp = document.createElement("div");
+                temp.innerHTML = article;
+                const oc = bootstrap.Offcanvas.getOrCreateInstance(document.getElementById('postDetails'));
+                document.getElementById('article-body').innerHTML = temp.textContent;
+                oc.show();
+           });
         });
       })();
     </script>

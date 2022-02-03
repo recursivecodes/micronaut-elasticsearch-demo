@@ -15,4 +15,6 @@
     <logger name="io.micronaut.data.query" level="trace" />
     <logger name="org.hibernate.SQL" level="trace"/>
     <logger name="org.hibernate.type.descriptor.sql" level="trace"/>
+    <logger name="co.elastic.clients.elasticsearch" level="trace" />
+    <logger name="co.elastic.clients" level="trace" />
 </configuration>

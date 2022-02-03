@@ -6,13 +6,10 @@ import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Property;
 import io.micronaut.data.event.listeners.*;
 import jakarta.inject.Singleton;
-import org.elasticsearch.action.ActionListener;
-import org.elasticsearch.action.DocWriteResponse;
-import org.elasticsearch.action.delete.DeleteResponse;
-import org.elasticsearch.action.index.IndexResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 
 @Factory
 @SuppressWarnings({"unused"})
@@ -20,7 +17,6 @@ public class BlogPostListeners {
     private static final Logger LOG = LoggerFactory.getLogger(BlogPostListeners.class);
     private final SearchService searchService;
     private final String indexName;
-    private final ActionListener<IndexResponse> indexListener;
 
     public BlogPostListeners(
             SearchService searchService,
@@ -28,23 +24,6 @@ public class BlogPostListeners {
     ) {
         this.searchService = searchService;
         this.indexName = indexName;
-
-        this.indexListener = new ActionListener<>() {
-             @Override
-             public void onResponse(IndexResponse indexResponse) {
-                 DocWriteResponse.Result indexResponseResult = indexResponse.getResult();
-                 if (indexResponseResult == DocWriteResponse.Result.CREATED) {
-                     LOG.info("Index created: {}", indexResponse.getId());
-                 }
-                 else if (indexResponseResult == DocWriteResponse.Result.UPDATED) {
-                     LOG.info("Index updated: {}", indexResponse.getId());
-                 }
-             }
-             @Override
-             public void onFailure(Exception e) {
-                 e.printStackTrace();
-             }
-        };
     }
 
     @Singleton
@@ -54,10 +33,7 @@ public class BlogPostListeners {
 
     @Singleton
     PostPersistEventListener<BlogPost> afterBlogPostPersist() {
-        return (blogPost) -> {
-            LOG.info("Indexing blogPost: {}", blogPost.getId() );
-            searchService.indexBlogPost(blogPost, indexName, indexListener);
-        };
+        return this::saveIndex;
     }
 
     @Singleton
@@ -67,10 +43,7 @@ public class BlogPostListeners {
 
     @Singleton
     PostUpdateEventListener<BlogPost> afterBlogPostUpdate() {
-        return (blogPost) -> {
-            LOG.info("Indexing blogPost: {}", blogPost.getId() );
-            searchService.indexBlogPost(blogPost, indexName, indexListener);
-        };
+        return this::saveIndex;
     }
 
     @Singleton
@@ -80,19 +53,33 @@ public class BlogPostListeners {
 
     @Singleton
     PostRemoveEventListener<BlogPost> afterBlogPostRemove() {
-        return (blogPost) -> {
-            LOG.info("Deleting indexed blogPost: {}", blogPost );
-            ActionListener<DeleteResponse> actionListener = new ActionListener<>() {
-                @Override
-                public void onResponse(DeleteResponse deleteResponse) {
-                    LOG.info("Index deleted: {}", blogPost.getId());
-                }
-                @Override
-                public void onFailure(Exception e) {
-                    e.printStackTrace();
-                }
-            };
-            searchService.deleteBlogPost(blogPost, indexName, actionListener);
-        };
+        return this::deleteIndex;
+    }
+    private void saveIndex(BlogPost blogPost) {
+        LOG.info("Indexing blogPost: {}", blogPost.getId() );
+        try {
+            searchService.indexBlogPost(blogPost, indexName)
+                    .thenAccept(response -> LOG.info("Index operation ({}) complete!", response.result()))
+                    .exceptionally(e -> {
+                        LOG.error("Exception while indexing: {}", e.getMessage());
+                        return null;
+                    });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void deleteIndex(BlogPost blogPost) {
+        LOG.info("Deleting indexed blogPost with ID: {}", blogPost.getId() );
+        try {
+            searchService.deleteIndexedBlogPost(blogPost, indexName)
+                    .thenAccept(response -> LOG.info("Index deleted: {}", blogPost.getId()))
+                    .exceptionally(e -> {
+                        LOG.error("Exception while deleting index: {}", e.getMessage());
+                        return null;
+                    });
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -1,5 +1,6 @@
 package codes.recursive.controller;
 
+import co.elastic.clients.elasticsearch.core.SearchResponse;
 import codes.recursive.command.SearchCommand;
 import codes.recursive.domain.BlogPost;
 import codes.recursive.repository.BlogPostRepository;
@@ -12,7 +13,6 @@ import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Error;
 import io.micronaut.http.annotation.*;
 import io.micronaut.views.ModelAndView;
-import org.elasticsearch.action.search.SearchResponse;
 
 import java.io.IOException;
 import java.net.URI;
