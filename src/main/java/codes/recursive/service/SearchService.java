@@ -10,7 +10,6 @@ import co.elastic.clients.elasticsearch.indices.CreateIndexResponse;
 import co.elastic.clients.elasticsearch.indices.DeleteIndexResponse;
 import codes.recursive.command.SearchCommand;
 import codes.recursive.domain.BlogPost;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.core.annotation.Introspected;
 import jakarta.inject.Singleton;
 
@@ -30,9 +29,11 @@ public class SearchService {
     }
 
     public boolean deleteIndex(String indexName) throws IOException {
-        DeleteIndexResponse deleteIndexResponse = searchClient.indices().delete(builder ->
-                builder.index(indexName)
-        );
+        DeleteIndexResponse deleteIndexResponse = searchClient
+                .indices()
+                .delete(builder ->
+                        builder.index(indexName)
+                );
         return deleteIndexResponse.acknowledged();
     }
 
@@ -54,8 +55,6 @@ public class SearchService {
     }
 
     public CompletableFuture<IndexResponse> indexBlogPost(BlogPost blogPost, String indexName) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        String doc = mapper.writeValueAsString(blogPost);
         return asyncSearchClient.index(b -> b
                 .index(indexName)
                 .id(blogPost.getId().toString())
@@ -64,7 +63,10 @@ public class SearchService {
     }
 
     public CompletableFuture<DeleteResponse> deleteIndexedBlogPost(BlogPost blogPost, String indexName) throws IOException {
-        return asyncSearchClient.delete(b -> b.index(indexName).id(blogPost.getId().toString()));
+        return asyncSearchClient.delete(b -> b
+                .index(indexName)
+                .id(blogPost.getId().toString())
+        );
     }
 
     public SearchResponse<BlogPost> search(SearchCommand searchCommand, String indexName) throws IOException {
