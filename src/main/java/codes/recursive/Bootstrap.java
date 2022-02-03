@@ -57,7 +57,7 @@ public class Bootstrap implements ApplicationEventListener<ServerStartupEvent> {
             }
         }
 
-        // clean up favorites (delete all)
+        // clean up blog posts (delete all)
         LOG.info("Deleting records...");
         blogPostRepository.deleteAll();
         LOG.info("Records deleted!");
@@ -68,7 +68,7 @@ public class Bootstrap implements ApplicationEventListener<ServerStartupEvent> {
         SyndFeed feed = input.build(new XmlReader(feedSource));
 
         List<BlogPost> blogPosts = new ArrayList<>();
-        feed.getEntries().forEach( (s) -> {
+        feed.getEntries().forEach( s -> {
             SyndEntry item = (SyndEntry) s;
             String article = ((SyndContentImpl) item.getContents().get(0)).getValue();
             article = StringEscapeUtils.unescapeHtml4(article);
@@ -79,8 +79,8 @@ public class Bootstrap implements ApplicationEventListener<ServerStartupEvent> {
                             .build();
             blogPosts.add(blogPost);
         });
+        // create blog post records (will be indexed automatically)
         blogPostRepository.saveAll(blogPosts);
-        // create favorites records (will be indexed automatically)
         LOG.info("Blog posts imported!");
         LOG.info("ServerStartupEvent handler end...");
     }
