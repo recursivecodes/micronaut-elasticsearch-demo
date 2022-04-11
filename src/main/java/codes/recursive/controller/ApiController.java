@@ -5,6 +5,9 @@ import codes.recursive.command.SearchCommand;
 import codes.recursive.domain.BlogPost;
 import codes.recursive.repository.BlogPostRepository;
 import codes.recursive.service.SearchService;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.context.annotation.Property;
 import io.micronaut.core.util.CollectionUtils;
 import io.micronaut.http.HttpResponse;
@@ -12,6 +15,7 @@ import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.*;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Optional;
 
 @Controller("/api")
@@ -56,11 +60,12 @@ public class ApiController {
     @Post(uri = "/search", consumes = MediaType.APPLICATION_JSON)
     public HttpResponse searchPost(SearchCommand searchCommand) throws IOException {
         SearchResponse searchResponse = searchService.search(searchCommand, indexName);
-        return HttpResponse.ok(
-                CollectionUtils.mapOf(
-                        "searchCommand", searchCommand,
-                        "searchResponse", searchResponse
-                )
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+        Map response = CollectionUtils.mapOf(
+                "searchCommand", searchCommand,
+                "searchResponse", searchResponse
         );
+        return HttpResponse.ok(mapper.writeValueAsString(response));
     }
 }

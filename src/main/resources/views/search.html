@@ -72,6 +72,10 @@
           }, false);
         });
 
+        function htmlDecode(input) {
+            let doc = new DOMParser().parseFromString(input, "text/html");
+            return doc.documentElement.textContent;
+        }
         document.querySelectorAll('.show-offcanvas').forEach(t => {
             t.addEventListener('click', function(evt) {
                 const a = evt.currentTarget;
@@ -79,7 +83,7 @@
                 const temp = document.createElement("div");
                 temp.innerHTML = article;
                 const oc = bootstrap.Offcanvas.getOrCreateInstance(document.getElementById('postDetails'));
-                document.getElementById('article-body').innerHTML = temp.textContent;
+                document.getElementById('article-body').innerHTML = htmlDecode(temp.textContent);
                 oc.show();
            });
         });

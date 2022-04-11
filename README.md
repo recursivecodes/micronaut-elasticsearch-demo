@@ -1,15 +1,26 @@
 # Micronaut ElasticSearch Demo
 
-## Test
+- [x] Dependencies - refer to docs
+- [ ] Config 
+- [ ] Domain class
+- [ ] Repository
+- [ ] Search Service
+- [ ] Controller (`PageController`/`ApiController`)
+- [ ] Listener (`BlogPostListeners`)
+- [ ] `ServerStartupEvent` handler (`Bootstrap.java`)
+- [ ] Demo UI
+- [ ] Demo API
+
+## API Demo
 
 ### Create Blog Post
 
 ```shell
-POST_ID=$(curl -i \
+POST_ID=$(curl \
   -X POST \
   -H "Content-Type: application/json" \
   -d '{"title": "New Blog Post", "description": "A new blog post for your reading pleasure.", "article" : "<p>Hello, world!</p>"}' \
-  http://localhost:8080/api/blogPost) | jq .data.id 
+  http://localhost:8080/api/blogPost | jq .id) 
 ```
 
 Response:
@@ -73,5 +84,5 @@ $ curl -s \
   -X POST \
   -H "Content-Type: application/json" \
   -d '{"searchString": "java", "offset": 0, "max": 5}' \
-  http://localhost:8080/api/search | jq
+  http://localhost:8080/api/search | fx
 ```
