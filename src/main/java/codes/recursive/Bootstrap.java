@@ -49,12 +49,17 @@ public class Bootstrap implements ApplicationEventListener<ServerStartupEvent> {
         LOG.info("Checking for existing index named: {}", indexName);
         boolean indexExists = searchService.indexExists(indexName);
         LOG.info("Index exists? {}", indexExists);
-        if (!indexExists) {
-            LOG.info("Creating index: {}", indexName);
-            CreateIndexResponse createIndexResponse = searchService.createIndex(indexName);
-            if (createIndexResponse != null) {
-                LOG.info("Create index response ack: {}", createIndexResponse.acknowledged());
-            }
+
+        if( indexExists) {
+            // fresh start
+            searchService.deleteIndex(indexName);
+            LOG.info("Deleted index: {}", indexName);
+        }
+
+        LOG.info("Creating index: {}", indexName);
+        CreateIndexResponse createIndexResponse = searchService.createIndex(indexName);
+        if (createIndexResponse != null) {
+            LOG.info("Create index response ack: {}", createIndexResponse.acknowledged());
         }
 
         // clean up blog posts (delete all)

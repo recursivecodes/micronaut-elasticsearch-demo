@@ -36,7 +36,7 @@
             <div class="row">
                 <div class="col-sm-12">
                     <p>Result: <span th:text="${status.index}"></span> (ID: <span th:text="${response.source.getId()}"></span>) |
-                        <a th:href="@{'/delete/' + ${response.source.getId()}}">delete</a></p>
+                        <a th:href="@{'/delete/' + ${response.source.getId()} + '?=' + ${#dates.createNow().getTime()}}">delete</a></p>
                     <ul>
                         <li>
                             <span th:text="${response.source.getArticle()}" class="d-none article-content"></span>

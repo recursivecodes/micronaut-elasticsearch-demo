@@ -55,7 +55,7 @@ public class PageController {
     }
 
     @Get(uri="/delete/{id}")
-    public HttpResponse<String> deleteFavorite(Long id) {
+    public HttpResponse<String> deleteBlogPost(Long id) {
         Optional<BlogPost> blogPost = blogPostRepository.findById(id);
         blogPost.ifPresent(blogPostRepository::delete);
         return HttpResponse.redirect(URI.create("/search"));

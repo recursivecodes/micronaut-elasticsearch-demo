@@ -37,21 +37,21 @@ public class ApiController {
     }
 
     @Post(uri = "/blogPost", produces = MediaType.APPLICATION_JSON)
-    public HttpResponse saveFavorite(@Body BlogPost blogPost) {
+    public HttpResponse saveBlogPost(@Body BlogPost blogPost) {
         return HttpResponse.created(
                 blogPostRepository.save(blogPost)
         );
     }
 
     @Put(uri = "/blogPost", produces = MediaType.APPLICATION_JSON)
-    public HttpResponse updateFavorite(@Body BlogPost blogPost) {
+    public HttpResponse updateBlogPost(@Body BlogPost blogPost) {
         return HttpResponse.ok(
                 blogPostRepository.update(blogPost)
         );
     }
 
     @Get(uri="/delete/{id}")
-    public HttpResponse deleteFavorite(Long id) {
+    public HttpResponse deleteBlogPost(Long id) {
         Optional<BlogPost> blogPost = blogPostRepository.findById(id);
         blogPost.ifPresent(blogPostRepository::delete);
         return HttpResponse.noContent();
