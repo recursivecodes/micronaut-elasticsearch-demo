@@ -9,7 +9,7 @@ micronaut:
         paths: "classpath:public"
 elasticsearch:
   httpHosts:
-    - "https://minikube:9200"
+    - "http://docker.local:9200"
   cluster:
     name:
   request:

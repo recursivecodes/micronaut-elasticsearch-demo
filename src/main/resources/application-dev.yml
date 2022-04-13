@@ -1,3 +1,6 @@
 elasticsearch:
   httpHosts:
     - "http://docker.local:9200"
+  request:
+    default:
+      authentication-enabled: false
