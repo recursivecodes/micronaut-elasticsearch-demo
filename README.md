@@ -37,7 +37,7 @@ connection: keep-alive
 Save ID:
 
 ```shell
-$ POST_ID=$(curl -X POST \
+POST_ID=$(curl -X POST \
   -H "Content-Type: application/json" \
   -d '{"title": "New Blog Post", "description": "A new blog post for your reading pleasure.", "article" : "<p>Hello, world!</p>"}' \
   http://localhost:8080/api/blogPost | jq .id)
@@ -46,7 +46,7 @@ $ POST_ID=$(curl -X POST \
 ### Update Blog Post
 
 ```shell
-$ curl -i \
+curl -i \
   -X PUT \
   -H "Content-Type: application/json" \
   -d '{"id": '$POST_ID', "title": "New Blog Post", "description": "An updated blog post for your reading pleasure.", "article" : "<p>Hello, world!</p>"}' \
@@ -56,7 +56,7 @@ $ curl -i \
 ### Delete Blog Post
 
 ```shell
-$ curl -i localhost:8080/api/delete/$POST_ID
+curl -i localhost:8080/api/delete/$POST_ID
 ```
 
 Response:
@@ -70,7 +70,7 @@ connection: keep-alive
 ### Search
 
 ```shell
-$ curl -s \
+curl -s \
   -X POST \
   -d 'searchString=Java' \
   -d 'max=5' \
@@ -79,8 +79,16 @@ $ curl -s \
 
 Using API:
 
+GET:
+
 ```shell
-$ curl -s \
+curl http://localhost:8080/api/search\?searchString\=java\&offset\=0\&max\=5 | fx
+```
+
+POST:
+
+```shell
+curl -s \
   -X POST \
   -H "Content-Type: application/json" \
   -d '{"searchString": "java", "offset": 0, "max": 5}' \

@@ -57,6 +57,23 @@ public class ApiController {
         return HttpResponse.noContent();
     }
 
+    @Get(uri = "/search")
+    public HttpResponse searchGet(@QueryValue String searchString,
+                                  @QueryValue Optional<Integer> offset,
+                                  @QueryValue Optional<Integer> max) throws IOException {
+        SearchResponse searchResponse = searchService.search(
+                searchString,
+                indexName,
+                offset.orElse(0),
+                max.orElse(25));
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+        Map response = CollectionUtils.mapOf(
+                "searchResponse", searchResponse
+        );
+        return HttpResponse.ok(mapper.writeValueAsString(response));
+    }
+
     @Post(uri = "/search", consumes = MediaType.APPLICATION_JSON)
     public HttpResponse searchPost(SearchCommand searchCommand) throws IOException {
         SearchResponse searchResponse = searchService.search(searchCommand, indexName);

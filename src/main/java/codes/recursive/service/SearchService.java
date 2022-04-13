@@ -69,6 +69,10 @@ public class SearchService {
         );
     }
 
+    public SearchResponse<BlogPost> search(String searchString, String indexName, Integer offset, Integer max) throws IOException {
+        return search( new SearchCommand(searchString, offset, max), indexName);
+    }
+
     public SearchResponse<BlogPost> search(SearchCommand searchCommand, String indexName) throws IOException {
         return searchClient.search(s -> s
                 .index(indexName)

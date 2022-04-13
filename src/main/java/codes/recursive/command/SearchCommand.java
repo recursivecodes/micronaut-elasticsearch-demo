@@ -1,10 +1,13 @@
 package codes.recursive.command;
 
 import io.micronaut.core.annotation.Introspected;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Introspected
-@AllArgsConstructor(access = AccessLevel.PACKAGE)
+@AllArgsConstructor(access = AccessLevel.PUBLIC)
 @NoArgsConstructor
 @Data
 public class SearchCommand {
