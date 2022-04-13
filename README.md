@@ -1,10 +1,10 @@
 # Micronaut ElasticSearch Demo
 
 - [x] Dependencies - refer to docs
-- [ ] Config 
-- [ ] Domain class
-- [ ] Repository
-- [ ] Search Service
+- [ ] Config (`application-dev.yml`)
+- [ ] Domain class (`BlogPost`)
+- [ ] Repository (`BlogPostRepository`)
+- [ ] Search Service (`SearchService`)
 - [ ] Controller (`PageController`/`ApiController`)
 - [ ] Listener (`BlogPostListeners`)
 - [ ] `ServerStartupEvent` handler (`Bootstrap.java`)
