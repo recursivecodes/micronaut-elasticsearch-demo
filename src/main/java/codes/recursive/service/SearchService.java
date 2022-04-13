@@ -70,7 +70,11 @@ public class SearchService {
     }
 
     public SearchResponse<BlogPost> search(String searchString, String indexName, Integer offset, Integer max) throws IOException {
-        return search( new SearchCommand(searchString, offset, max), indexName);
+        SearchCommand searchCommand = new SearchCommand();
+        searchCommand.setSearchString(searchString);
+        searchCommand.setMax(max);
+        searchCommand.setOffset(offset);
+        return search( searchCommand, indexName);
     }
 
     public SearchResponse<BlogPost> search(SearchCommand searchCommand, String indexName) throws IOException {
